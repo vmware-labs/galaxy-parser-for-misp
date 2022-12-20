@@ -1,22 +1,29 @@
-# galaxy-parser-for-misp
+# Galaxy Parser for MISP
 
-## Overview
+Utilities to parse galaxy clusters and resolve labels (including synonyms).
 
-## Try it out
+There is some string normalization (whitespace removal and compound words handling) that 
+can be improved, but anything domain-specific is computed using MITRE galaxies.
 
-### Prerequisites
+```bash
+./bin/query_galaxy.py -q sednit -g mitre-intrusion-set 
+> Mapping 'sednit' to:  ['misp-galaxy:mitre-intrusion-set="APT28 - G0007"']
+```
 
-* Prereq 1
-* Prereq 2
-* Prereq 3
+```bash
+./bin/query_galaxy.py -q apt28 -g mitre-intrusion-set 
+> Mapping 'apt28' to:  ['misp-galaxy:mitre-intrusion-set="APT28 - G0007"']
+```
 
-### Build & Run
+```bash
+./bin/query_galaxy.py -q feodo -g malpedia
+> Mapping 'feodo' to:  ['misp-galaxy:malpedia="Emotet"']
+```
 
-1. Step 1
-2. Step 2
-3. Step 3
-
-## Documentation
+```bash
+./bin/query_galaxy.py -q emotet -g malpedia
+> Mapping 'emotet' to:  ['misp-galaxy:malpedia="Emotet"']
+```
 
 ## Contributing
 
@@ -27,3 +34,4 @@ as an open-source patch. For more detailed information, refer to [CONTRIBUTING.m
 
 ## License
 
+[BSD 2-Clause](https://spdx.org/licenses/BSD-2-Clause.html)

@@ -1,0 +1,5 @@
+[misp]
+url =
+key =
+verify_ssl = False
+debug = False

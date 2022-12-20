@@ -1,4 +1,3 @@
-# Ignore everything in this directory
-*
-# Except this file
-!.gitignore
+src/galaxy_parser/__pycache__
+.tox
+src/misp_galaxy_parser.egg-info
