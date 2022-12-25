@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
 # Copyright 2022 VMware, Inc.
 # SPDX-License-Identifier: BSD-2
-"""Script to replace stale cluster tags."""
 import argparse
 import configparser
 import logging
-import pymisp
 import sys
-import warnings
 
 from typing import List
 from typing import Dict
@@ -18,8 +15,12 @@ from typing import Union
 
 from galaxy_parser import galaxy
 
+try:
+    import pymisp
+except ImportError as ie:
+    print(f"'{__file__}' requires 'pymisp'")
+    pymisp = None
 
-warnings.filterwarnings("ignore", message="Unverified HTTPS request")
 
 # Configure the loggers
 logging.basicConfig(
@@ -28,9 +29,11 @@ logging.basicConfig(
 )
 
 # Galaxies whose clusters have a suffix-based identity
-SUFFIX_BASED_GALAXIES = frozenset([
-    "mitre-attack-pattern",  # MITRE techniques can be renamed, but the technique id remains
-])
+SUFFIX_BASED_GALAXIES = frozenset(
+    [
+        "mitre-attack-pattern",  # MITRE techniques can be renamed, but the technique id remains
+    ]
+)
 
 
 def is_tag_stale__by_suffix(instance_tag: str, tag: str, separator: Optional[str] = None) -> bool:
@@ -51,7 +54,7 @@ def is_tag_stale__by_synonym(instance_tag: str, tag: str, synonyms: Dict[str, Se
 
 def create_cluster_tag(galaxy_prefix: str, value: str) -> str:
     """Create a galaxy cluster tag given the galaxy prefix and the tag value."""
-    return f"{galaxy_prefix}=\"{value}\""
+    return f'{galaxy_prefix}="{value}"'
 
 
 def get_tag_synonyms(galaxy_values: Iterable[Dict], galaxy_prefix: str) -> Dict[str, Set[str]]:
@@ -106,8 +109,9 @@ def search_and_replace_tag(
     misp.untag(entity, tag_by_name[old_tag])
 
 
+# pylint:disable=W1203
 def main() -> int:
-    """Update the tags on entity and attributes given the current galaxy cluster values."""
+    """Script to replace stale cluster tags."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-c",
@@ -125,7 +129,6 @@ def main() -> int:
         action="store_true",
         help="whether to be a dry run",
     )
-    # Parse options and init the logger
     args = parser.parse_args()
     conf = configparser.ConfigParser()
     conf.read(args.config_file)
@@ -176,7 +179,9 @@ def main() -> int:
     # Search for tags in existing events
     logger.info("Processing events")
     for idx, (old_tag, new_tag) in enumerate(old_tag_to_new_tag.items(), start=1):
-        logger.info(f"[{idx}/{len(old_tag_to_new_tag)}] Replacing tag '{old_tag}' with '{new_tag}'")
+        logger.info(
+            f"[{idx}/{len(old_tag_to_new_tag)}] Replacing tag '{old_tag}' with '{new_tag}'"
+        )
         events = misp.search(
             controller="events",
             event_tags=old_tag,
@@ -190,7 +195,9 @@ def main() -> int:
     # Search for tags in existing attributes
     logger.info("Processing attributes")
     for idx, (old_tag, new_tag) in enumerate(old_tag_to_new_tag.items(), start=1):
-        logger.info(f"[{idx}/{len(old_tag_to_new_tag)}] Replacing tag '{old_tag}' with '{new_tag}'")
+        logger.info(
+            f"[{idx}/{len(old_tag_to_new_tag)}] Replacing tag '{old_tag}' with '{new_tag}'"
+        )
         attributes = misp.search(
             controller="attributes",
             tags=old_tag,

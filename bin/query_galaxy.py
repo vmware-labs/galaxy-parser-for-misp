@@ -1,33 +1,26 @@
 #!/usr/bin/env python3
 # Copyright 2022 VMware, Inc.
 # SPDX-License-Identifier: BSD-2
-"""Script to query a MISP galaxy and resolve synonyms."""
 import argparse
-import os
 import sys
+import tempfile
 
-import galaxy_parser
-from galaxy_parser import galaxy
 from galaxy_parser import exceptions
-
-
-TMP_DIR = "/tmp/"
+from galaxy_parser import galaxy
 
 
 def main():
+    """Script to query a MISP galaxy and resolve synonyms."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-q",
-        "--query",
-        dest="query",
-        required=True,
-        help="query",
+        "query",
+        help="the value to query",
     )
     parser.add_argument(
         "-g",
         "--galaxy-list",
         dest="galaxy_list",
-        nargs='+',
+        nargs="+",
         default=["mitre-intrusion-set", "mitre-malware", "mitre-tool"],
         help="list of galaxy clusters to query",
     )
@@ -64,24 +57,17 @@ def main():
     )
     args = parser.parse_args()
 
-    # Make sure we can write to a temporary directory
-    if os.access(TMP_DIR, os.W_OK):
-        cache_directory = TMP_DIR
-    else:
-        cache_directory = "./"
-
-    # Create galaxy manager and discerners
+    # Create galaxy manager
     galaxy_manager = galaxy.GalaxyManagerOnDemand(
-        cache_directory=cache_directory,
+        cache_directory=tempfile.gettempdir(),
         galaxy_names=args.galaxy_list,
         verbose=True,
         force=args.force_download,
     )
-    discerners = galaxy_parser.get_discerners(galaxy_manager)
 
     # Process
     labels = []
-    for d in discerners:
+    for d in galaxy_manager.create_discerners():
         try:
             discernment = d.discern(
                 args.query,
@@ -91,6 +77,8 @@ def main():
             labels.append(discernment.get_tag())
         except exceptions.FailedDiscernment:
             pass
+
+    # Print output
     print(f"Mapping '{args.query}' to: ", labels)
 
     return 0

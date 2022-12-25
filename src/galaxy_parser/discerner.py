@@ -7,12 +7,10 @@ import re
 
 from typing import cast
 from typing import Dict
-from typing import List
 from typing import Type
 from typing import TypeVar
 from typing import Optional
 
-from galaxy_parser import galaxy
 from galaxy_parser import exceptions
 
 
@@ -26,23 +24,23 @@ class Discernment:
     raw_data: Dict
 
     def get_tag(self) -> str:
-        return f"misp-galaxy:{self.galaxy}=\"{self.discerned_name}\""
+        return f'misp-galaxy:{self.galaxy}="{self.discerned_name}"'
 
 
 class AbstractDiscerner(abc.ABC):
     """Interface for all discerners."""
 
-    BLACKLIST = frozenset([
-        "encrypted",
-        "malware",
-        "phishing",
-        "ransomware",
-        "threat",
-        "trojan",
-        "backdoor",
-    ])
-
-    SEPARATORS = ", "
+    BLACKLIST = frozenset(
+        [
+            "encrypted",
+            "malware",
+            "phishing",
+            "ransomware",
+            "threat",
+            "trojan",
+            "backdoor",
+        ]
+    )
 
     @staticmethod
     def normalize(label: str) -> str:
@@ -97,25 +95,6 @@ class AbstractDiscerner(abc.ABC):
             raw_data=raw_data,
         )
 
-    def discern_compound(
-        self,
-        label: str,
-        include_partial_matches: bool = False,
-        separators: Optional[str] = None,
-        hint: Optional[str] = None,
-    ) -> List[Discernment]:
-        """Decompose a label (useful with compound words), and then discern."""
-        if not separators:
-            separators = self.SEPARATORS
-        ret = []
-        for label_fragment in label.split(separators):
-            try:
-                discernment = self.discern(label_fragment, include_partial_matches, hint)
-                ret.append(discernment)
-            except exceptions.FailedDiscernment:
-                continue
-        return ret
-
 
 class BaseDiscerner(AbstractDiscerner, abc.ABC):
     """Base class for standard discerners."""
@@ -129,17 +108,17 @@ class BaseDiscerner(AbstractDiscerner, abc.ABC):
         cls,
         cluster: str,
         source: Optional[str] = None,
-    ) -> Type[galaxy.BaseGalaxyManagerSubType]:
+    ) -> Type["BaseDiscernerSubType"]:
         """Dynamically create a new type given a cluster name."""
         if not source:
             source = "custom"
         class_name = f"DiscernerClass_{cluster}_{source}"
         return cast(
-            Type[galaxy.BaseGalaxyManagerSubType],
-            type(class_name, (cls,), {"GALAXY_NAME": cluster, "SOURCE_NAME": source})
+            Type["BaseDiscernerSubType"],
+            type(class_name, (cls,), {"GALAXY_NAME": cluster, "SOURCE_NAME": source}),
         )
 
-    def __init__(self, galaxy_manager: galaxy.BaseGalaxyManagerSubType) -> None:
+    def __init__(self, galaxy_manager: "galaxy_parser.galaxy.BaseGalaxyManagerSubType") -> None:
         """Constructor."""
         galaxy_object = galaxy_manager.get_galaxy(self.GALAXY_NAME)
 
@@ -184,8 +163,9 @@ class BaseDiscerner(AbstractDiscerner, abc.ABC):
         try:
             # after normalizing we try to get a precise match
             return {
-                self.entry_by_normalized_label[normalized_label]["value"]:
-                    self.entry_by_normalized_label[normalized_label]
+                self.entry_by_normalized_label[normalized_label][
+                    "value"
+                ]: self.entry_by_normalized_label[normalized_label]
             }
         except KeyError:
             # if we fail we start considering whether using a partial would give us a result
@@ -196,9 +176,9 @@ class BaseDiscerner(AbstractDiscerner, abc.ABC):
                     #   1) because the label we are looking can match only one word
                     #   2) because the match is not really exact
                     if self._partial_match(normalized_label, unique_normalized_label):
-                        ret[self.entry_by_normalized_label[unique_normalized_label]["value"]] = (
-                            self.entry_by_normalized_label[unique_normalized_label]
-                        )
+                        ret[
+                            self.entry_by_normalized_label[unique_normalized_label]["value"]
+                        ] = self.entry_by_normalized_label[unique_normalized_label]
                 # partial matches are partial so there can be more than one
                 if ret:
                     return ret

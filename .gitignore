@@ -1,3 +1,5 @@
 src/galaxy_parser/__pycache__
 .tox
 src/misp_galaxy_parser.egg-info
+venv
+tests/__pycache__
