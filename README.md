@@ -27,9 +27,9 @@ can be improved, but anything domain-specific is computed using MISP galaxies.
 
 ## Install
 
-This package is available on PyPI and it can be installed with `pip`:
+This package is available on PyPI, and it can be installed with `pip`:
 ```bash
-pip install misp-galaxy-manager
+pip install misp-galaxy-parser
 ```
 
 ## Contributing
