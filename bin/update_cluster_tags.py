@@ -5,6 +5,7 @@ import argparse
 import configparser
 import logging
 import sys
+import warnings
 
 from typing import List
 from typing import Dict
@@ -19,7 +20,7 @@ try:
     import pymisp
 except ImportError as ie:
     print(f"'{__file__}' requires 'pymisp'")
-    pymisp = None
+    raise
 
 
 # Configure the loggers
@@ -135,10 +136,13 @@ def main() -> int:
 
     # Load MISP
     logger = logging.getLogger(__name__)
+    verify_ssl = conf.getboolean("misp", "verify_ssl", fallback=False)
+    if not verify_ssl:
+        warnings.filterwarnings("ignore", message="Unverified HTTPS request")
     misp = pymisp.PyMISP(
         url=conf.get("misp", "url"),
         key=conf.get("misp", "key"),
-        ssl=conf.getboolean("misp", "verify_ssl", fallback=False),
+        ssl=verify_ssl,
         debug=conf.getboolean("misp", "debug", fallback=False),
     )
 

@@ -15,7 +15,7 @@ GALAXY_DATA = {
         "Andrea Garavaglia",
         "Andras Iklody",
         "Daniel Plohmann",
-        "Christophe Vandeplas"
+        "Christophe Vandeplas",
     ],
     "category": "tool",
     "description": "Malware galaxy cluster based on Malpedia.",
@@ -31,41 +31,35 @@ GALAXY_DATA = {
                     "https://malpedia.caad.fkie.fraunhofer.de/details/aix.fastcash",
                 ],
                 "synonyms": [],
-                "type": []
+                "type": [],
             },
             "uuid": "e8a04177-6a91-46a6-9f63-6a9fac4dfa02",
-            "value": "FastCash"
+            "value": "FastCash",
         },
         {
             "description": "",
             "meta": {
                 "refs": [
                     "https://malpedia.caad.fkie.fraunhofer.de/details/apk.888_rat",
-                    "https://www.welivesecurity.com/2021/09/07/bladehawk-android-espionage-kurdish/"
+                    "https://www.welivesecurity.com/2021/09/07/bladehawk-android-espionage-kurdish/",
                 ],
                 "synonyms": ["888 ROT"],
-                "type": []
+                "type": [],
             },
             "uuid": "e98ae895-0831-4e10-aad1-593d1c678db1",
-            "value": "888 RAT"
+            "value": "888 RAT",
         },
         {
             "description": "",
-            "meta": {
-                "synonyms": [],
-                "type": []
-            },
+            "meta": {"synonyms": [], "type": []},
             "uuid": "e98ae895-0831-4e10-aad1-593d1c678db2",
-            "value": "777 RAT (Win)"
+            "value": "777 RAT (Win)",
         },
         {
             "description": "",
-            "meta": {
-                "synonyms": [],
-                "type": []
-            },
+            "meta": {"synonyms": [], "type": []},
             "uuid": "e98ae895-0831-4e10-aad1-593d1c678db3",
-            "value": "777 RAT (ELF)"
+            "value": "777 RAT (ELF)",
         },
     ],
 }

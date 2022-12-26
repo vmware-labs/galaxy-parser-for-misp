@@ -17,7 +17,7 @@ class TestGalaxyManager(unittest.TestCase):
         "Galaxy": {
             "type": "malpedia",
         },
-        "GalaxyCluster": []
+        "GalaxyCluster": [],
     }
 
     # these are the attributes of a partially loaded galaxy object

@@ -12,8 +12,8 @@ envlist = py39
 isolated_build = True
 
 [testenv]
-commands=nose2
-deps=
+commands = nose2
+deps =
     ddt
     mock
     nose2
@@ -35,6 +35,9 @@ exclude = """
   | \\.mypy_cache
   | \\.tox
   | \\.venv
+  | venv
+  | __pycache__
+  | misp_galaxy_parser.egg-info
   | _build
   | buck-out
   | build
