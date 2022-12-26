@@ -260,7 +260,7 @@ class GalaxyManagerLocal(BaseGalaxyManager):
         """Constructor."""
         super(GalaxyManagerLocal, self).__init__()
         if commit_hash and misp_version:
-            raise exceptions.ErrorInitializingGalaxy("Only 'commit_hash' or 'misp_version'")
+            raise ValueError("You need to specify either 'commit_hash' or 'misp_version'")
         if misp_version:
             commit_hash = self._get_commit_hash(misp_version)
         for galaxy_name in self._validate_galaxy_names(galaxy_names):
@@ -325,7 +325,7 @@ class GalaxyManagerOnDemand(GalaxyManagerLocal):
     ) -> None:
         """Constructor."""
         if commit_hash and misp_version:
-            raise exceptions.ErrorInitializingGalaxy("Only 'commit_hash' or 'misp_version'")
+            raise ValueError("You need to specify either 'commit_hash' or 'misp_version'")
         if misp_version:
             commit_hash = self._get_commit_hash(misp_version)
         for galaxy_name in self._validate_galaxy_names(galaxy_names):
