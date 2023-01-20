@@ -71,11 +71,12 @@ def get_tag_synonyms(galaxy_values: Iterable[Dict], galaxy_prefix: str) -> Dict[
 def get_galaxy_names_from_tag_names(tag_names: Iterable[str]) -> List[str]:
     """Return all galaxy names from the provided tag names."""
     tag_galaxy_names = set([])
+    galaxy_type_to_name = {v: k for k, v in galaxy.BaseGalaxyManager.GALAXY_NAME_TO_TYPE.items()}
     for tag_name in tag_names:
         try:
             tag_category, tag_galaxy = tag_name.split("=")[0].split(":")
-            if tag_category == "misp-galaxy":
-                tag_galaxy_names.add(tag_galaxy)
+            if tag_category == "misp-galaxy" and tag_galaxy in galaxy_type_to_name:
+                tag_galaxy_names.add(galaxy_type_to_name[tag_galaxy])
         except (IndexError, ValueError):
             continue
     return sorted(tag_galaxy_names)
