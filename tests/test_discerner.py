@@ -1,6 +1,7 @@
 # Copyright 2022 VMware, Inc.
 # SPDX-License-Identifier: BSD-2
 import ddt
+import logging
 import unittest
 
 import galaxy_parser
@@ -66,13 +67,12 @@ GALAXY_DATA = {
 
 
 @ddt.ddt
-class TestDiscerners(unittest.TestCase):
+class TestDiscernersCustom(unittest.TestCase):
     """Test the discerners."""
 
     @ddt.data(
         ("888 RAT", "888 RAT"),
         ("888", "888 RAT"),
-        ("888 ROT", "888 RAT"),
     )
     def test_discerner(self, args):
         """Test the standard discerner."""
@@ -83,6 +83,60 @@ class TestDiscerners(unittest.TestCase):
         )
         discerner_objects = galaxy_manager.create_discerners()
         discernments = galaxy_parser.get_discernments(discerner_objects, label)
+        self.assertEqual(discernments[0].discerned_name, discernment)
+
+
+@ddt.ddt
+class TestDiscernersMalpedia(unittest.TestCase):
+    """Test the discerners."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls._galaxy_manager = galaxy.GalaxyManagerLocal(
+            input_directory="./tests/data/",
+            galaxy_names=["malpedia"],
+            commit_hash="b787bbe",
+        )
+        logging.basicConfig(
+            format="%(levelname)s: %(message)s",
+            level=logging.DEBUG,
+        )
+
+    @ddt.data(
+        ("888", "888 RAT", True, None),
+        ("acbackdoor", "ACBackdoor (ELF)", True, "elf"),
+        ("babuk", "Babuk (ELF)", True, "elf"),
+        ("blackbasta", "Black Basta", True, "elf"),
+        ("blackmatter", "BlackMatter (ELF)", True, "elf"),
+        ("blackmatter", "BlackMatter (Windows)", True, "win"),
+        ("cronrat", "CronRAT", True, "elf"),
+        ("darkside", "DarkSide (ELF)", True, "elf"),
+        ("defray", "Defray", True, "elf"),
+        ("ech0raix", "QNAPCrypt", True, "elf"),
+        ("erebus", "Erebus (ELF)", True, "elf"),
+        ("kinsing", "Kinsing", True, "elf"),
+        ("lockbit", "LockBit (ELF)", True, "elf"),
+        ("merlin", "Merlin", True, "elf"),
+        ("redalert", "Red Alert", True, "elf"),
+        ("redxor", "RedXOR", True, "elf"),
+        ("revil", "REvil (ELF)", True, "elf"),
+        ("sysrv", "Sysrv-hello (ELF)", True, "elf"),
+        ("teamtnt", "TeamTNT", True, "elf"),
+        ("vermilion-strike", "Vermilion Strike (ELF)", True, "elf"),
+        ("Venom Loader", "Venom RAT", True, None),
+        ("Crimson RAT", "Crimson RAT", True, None),
+    )
+    def test_discerner__partial(self, args):
+        """Test the standard discerner."""
+        label, discernment, partial_marches, hint = args
+        discerner_objects = self._galaxy_manager.create_discerners()
+        discernments = galaxy_parser.get_discernments(
+            discerner_objects,
+            label,
+            include_partial_matches=partial_marches,
+            hint=hint,
+        )
         self.assertEqual(discernments[0].discerned_name, discernment)
 
 

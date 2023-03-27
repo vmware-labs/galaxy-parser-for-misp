@@ -31,12 +31,13 @@ def get_discerned_tags(
     string: str,
     include_partial_matches: bool = True,
     hint: Optional[str] = None,
+    resolve_local: bool = True,
 ) -> List[str]:
     """Get a list of tags from the loaded discerners."""
     if not string:
         return []
     discernments = get_discernments(discerners, string, include_partial_matches, hint)
-    return [x.get_tag() for x in discernments]
+    return [x.get_tag(resolve_local) for x in discernments]
 
 
 def get_mitre_technique_mapping(mitre_attack_galaxy_cluster: Dict[str, Any]) -> Dict[str, str]:
